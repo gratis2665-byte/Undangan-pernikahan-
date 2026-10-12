@@ -1,0 +1,6 @@
+{
+  "name": "The Royal Mosque Wedding - Satria & Nadia",
+  "description": "Web undangan pernikahan Islam bertema Royal Mosque megah dengan animasi cover masjid Islami, kubah dan menara bercahaya, ornamen fanous bergoyang, lantunan ayat Ar-Rum 21, RSVP, dan kado digital.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
