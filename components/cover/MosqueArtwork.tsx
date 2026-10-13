@@ -49,14 +49,13 @@ export function MosqueArtwork() {
         ].map((pt, i) => (
           <div
             key={i}
-            className="absolute rounded-full bg-[#fce79f] animate-pulse"
+            className="absolute rounded-full bg-[#fce79f] animate-soft-sparkle pointer-events-none"
             style={{
               left: pt.l,
               top: pt.t,
               width: `${pt.s}px`,
               height: `${pt.s}px`,
-              boxShadow: '0 0 6px #fae5aa',
-              animationDuration: '3s',
+              boxShadow: '0 0 8px #fae5aa',
               animationDelay: pt.d,
             }}
           />

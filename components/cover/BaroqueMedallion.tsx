@@ -36,7 +36,7 @@ export function BaroqueMedallion({
     // Automatically transition from Monogram to Wedding Title after 4 seconds, then cycle every 6 seconds
     const timer = setInterval(() => {
       setDisplayMode((prev) => (prev === 'monogram' ? 'title' : 'monogram'));
-    }, 6000);
+    }, 7500);
     return () => clearInterval(timer);
   }, []);
 
@@ -85,10 +85,10 @@ export function BaroqueMedallion({
       {/* THE ORNATE GOLDEN ISLAMIC ROYAL OVAL FRAME / CARTOUCHE */}
       {/* ============================================================== */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.65, y: 30 }}
+        initial={{ opacity: 0, scale: 0.9, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full aspect-[4/5] max-h-[460px] flex items-center justify-center filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.85)]"
+        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+        className="relative w-full aspect-[4/5] max-h-[460px] flex items-center justify-center filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.85)] animate-medallion-float"
       >
         {/* SVG Islamic Royal Gold Frame Graphic */}
         <svg
@@ -238,11 +238,11 @@ export function BaroqueMedallion({
             {displayMode === 'monogram' ? (
               <motion.div
                 key="monogram"
-                initial={{ opacity: 0, scale: 0.85, rotateY: 90 }}
-                animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-                exit={{ opacity: 0, scale: 0.85, rotateY: -90 }}
-                transition={{ duration: 0.85, ease: 'easeOut' }}
-                className="flex flex-col items-center justify-center"
+                initial={{ opacity: 0, scale: 0.94, filter: 'blur(3px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 1.04, filter: 'blur(3px)' }}
+                transition={{ duration: 0.75, ease: [0.25, 1, 0.5, 1] }}
+                className="flex flex-col items-center justify-center will-change-transform"
               >
                 {/* Crescent Moon & Islamic Crest Mini Icon */}
                 <div className="text-[#f6df98] mb-1 filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
@@ -277,11 +277,11 @@ export function BaroqueMedallion({
             ) : (
               <motion.div
                 key="title"
-                initial={{ opacity: 0, scale: 0.85, rotateY: 90 }}
-                animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-                exit={{ opacity: 0, scale: 0.85, rotateY: -90 }}
-                transition={{ duration: 0.85, ease: 'easeOut' }}
-                className="flex flex-col items-center justify-center"
+                initial={{ opacity: 0, scale: 0.94, filter: 'blur(3px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, scale: 1.04, filter: 'blur(3px)' }}
+                transition={{ duration: 0.75, ease: [0.25, 1, 0.5, 1] }}
+                className="flex flex-col items-center justify-center will-change-transform"
               >
                 <span className="font-cinzel text-[10px] sm:text-xs tracking-[0.25em] uppercase text-[#fae5aa]/90 mb-1">
                   Walimatul Ursy
@@ -318,9 +318,9 @@ export function BaroqueMedallion({
       {/* PERSONALIZED GUEST RECIPIENT CARD & "BUKA UNDANGAN" BUTTON */}
       {/* ============================================================== */}
       <motion.div
-        initial={{ opacity: 0, y: 25 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 1 }}
+        transition={{ delay: 0.45, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         className="w-full mt-4 flex flex-col items-center text-center"
       >
         <div className="bg-[#24040c]/85 border border-[#cda142]/40 backdrop-blur-md rounded-2xl px-6 py-4 shadow-[0_10px_25px_rgba(0,0,0,0.7)] w-full">

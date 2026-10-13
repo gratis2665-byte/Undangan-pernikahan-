@@ -80,11 +80,7 @@ function WeddingContent() {
       {/* ============================================================== */}
       {/* 1. COVER SECTION (Islamic Royal Mosque & Smooth Swaying Ornaments) */}
       {/* ============================================================== */}
-      <div
-        className={`relative w-full ${
-          isOpen ? 'h-[90vh] md:h-screen' : 'h-screen'
-        } overflow-hidden transition-all duration-700`}
-      >
+      <div className="relative w-full h-screen overflow-hidden">
         {/* Islamic Mosque Artwork Illustration (Clean 60fps rendering) */}
         <div className="absolute inset-0 w-full h-full">
           <MosqueArtwork />

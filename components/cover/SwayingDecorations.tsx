@@ -221,7 +221,7 @@ export function SwayingDecorations() {
       </div>
 
       <div className="absolute top-[36%] right-[12%] md:right-[20%] z-40 animate-butterfly-2 pointer-events-none">
-        <div className="animate-wing-flap" style={{ animationDuration: '0.38s' }}>
+        <div className="animate-wing-flap" style={{ animationDuration: '0.48s' }}>
           <svg width="36" height="32" viewBox="0 0 60 50" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="bfGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
