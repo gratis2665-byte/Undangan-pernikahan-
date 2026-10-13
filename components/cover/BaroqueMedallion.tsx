@@ -329,7 +329,7 @@ export function BaroqueMedallion({
           </p>
           
           <h2 className="font-playfair text-xl sm:text-2xl font-bold text-white tracking-wide py-0.5 truncate max-w-full">
-            {guestName || 'Tamu Undangan Terhormat'}
+            {guestName || data?.guestName || 'Tamu Undangan Terhormat'}
           </h2>
 
           <p className="text-[10px] text-[#f8e3a1]/70 italic mt-0.5 font-sans">

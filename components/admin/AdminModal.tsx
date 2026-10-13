@@ -19,6 +19,8 @@ import {
   Plus,
   Sparkles,
   RefreshCw,
+  Mail,
+  Copy,
 } from 'lucide-react';
 import { WeddingData, GalleryItem, DEFAULT_WEDDING_DATA } from '@/lib/wedding-data';
 import { compressImageFile } from '@/lib/image-compress';
@@ -41,9 +43,10 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
     setFormData(data);
   }
 
-  const [activeTab, setActiveTab] = useState<'mempelai' | 'galeri' | 'akad' | 'resepsi' | 'ayat' | 'rekening'>('mempelai');
+  const [activeTab, setActiveTab] = useState<'mempelai' | 'tamu' | 'galeri' | 'akad' | 'resepsi' | 'ayat' | 'rekening'>('mempelai');
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
+  const [copiedGuestLink, setCopiedGuestLink] = useState(false);
 
   // New gallery item state
   const [newGalleryTitle, setNewGalleryTitle] = useState('');
@@ -127,8 +130,19 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
     }));
   };
 
+  const handleCopyGuestLink = () => {
+    if (typeof window === 'undefined') return;
+    const guestQuery = encodeURIComponent((formData.guestName || 'Bpk. Budi Santoso & Keluarga').trim());
+    const fullUrl = `${window.location.origin}${window.location.pathname}?to=${guestQuery}`;
+    navigator.clipboard.writeText(fullUrl);
+    setCopiedGuestLink(true);
+    setTimeout(() => setCopiedGuestLink(false), 2500);
+  };
+
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const guestCallName = (formData.guestName || '').trim() || 'Bpk. Budi Santoso & Keluarga';
 
     const groomCallName = (
       formData.groom.name.trim() ||
@@ -144,6 +158,7 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
 
     const finalData: WeddingData = {
       ...formData,
+      guestName: guestCallName,
       groom: {
         ...formData.groom,
         name: groomCallName,
@@ -216,6 +231,7 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
         <div className="flex border-b border-[#cda142]/20 bg-[#190207] overflow-x-auto p-1.5 gap-1 text-xs font-cinzel">
           {[
             { id: 'mempelai', label: 'Mempelai & Cover', icon: User },
+            { id: 'tamu', label: 'Nama Tamu Cover', icon: Mail },
             { id: 'galeri', label: 'Galeri Foto', icon: ImageIcon },
             { id: 'akad', label: 'Akad Nikah', icon: Calendar },
             { id: 'resepsi', label: 'Resepsi', icon: Settings },
@@ -621,6 +637,213 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
                   placeholder="24 . 10 . 2026"
                   className="w-full px-3 py-2 rounded-xl bg-[#29050f] border border-[#cda142]/30 text-white focus:outline-none focus:border-[#fae5aa]"
                 />
+              </div>
+
+              {/* EDIT NAMA TAMU UNDANGAN DI COVER */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#170207] border-2 border-[#cda142]/50 space-y-4 shadow-xl">
+                <div className="flex items-center justify-between border-b border-[#cda142]/20 pb-2">
+                  <h4 className="font-cinzel text-xs font-bold text-[#fae5aa] uppercase tracking-wider flex items-center gap-1.5">
+                    <Mail className="w-4 h-4 text-[#fae5aa]" />
+                    Nama Tamu Undangan di Cover (Kepada Yth.)
+                  </h4>
+                  <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800">
+                    Langsung Berubah di Cover
+                  </span>
+                </div>
+
+                <p className="text-[11px] text-stone-300">
+                  Ubah nama tamu penerima yang tertera di kartu undangan cover utama. Nama ini akan langsung berganti di cover begitu disimpan.
+                </p>
+
+                <div>
+                  <label className="block text-[11px] text-[#fae5aa] mb-1 font-semibold">
+                    Nama Tamu / Penerima Undangan di Cover *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.guestName || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        guestName: e.target.value,
+                      })
+                    }
+                    placeholder="Contoh: Bpk. Budi Santoso &amp; Keluarga"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#29050f] border-2 border-[#cda142] text-white text-sm focus:outline-none focus:border-[#fae5aa] font-medium"
+                  />
+                  <span className="text-[10px] text-stone-400 mt-1 block">
+                    Nama ini langsung tampil di kartu &quot;Kepada Yth. Bapak/Ibu/Saudara/i&quot; pada cover undangan.
+                  </span>
+                </div>
+
+                {/* Quick Presets */}
+                <div>
+                  <span className="text-[10px] text-stone-400 block mb-1.5 font-sans">
+                    Pilihan Cepat / Format Nama Populer:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      'Bpk. Budi Santoso & Keluarga',
+                      'Bpk. H. Ahmad & Ibu Siti',
+                      'Keluarga Besar Bpk. Rahmat',
+                      'Sahabat & Rekan Kerja',
+                      'Tamu Undangan Terhormat',
+                    ].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, guestName: preset })}
+                        className="text-[10px] px-2.5 py-1 rounded-lg bg-[#2a0610] hover:bg-[#3d0a19] text-[#fae5aa] border border-[#cda142]/30 transition cursor-pointer"
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Pratinjau Kartu Tamu di Cover */}
+                <div className="bg-[#24040c] border border-[#cda142]/50 rounded-2xl p-4 text-center shadow-inner">
+                  <p className="text-[10px] tracking-[0.2em] uppercase font-cinzel text-[#e5c07b]/90 mb-1">
+                    Pratinjau Kartu di Cover: Kepada Yth. Bapak/Ibu/Saudara/i:
+                  </p>
+                  <h3 className="font-playfair text-lg sm:text-xl font-bold text-white tracking-wide py-0.5 truncate">
+                    {formData.guestName || 'Tamu Undangan Terhormat'}
+                  </h3>
+                  <p className="text-[9px] text-[#f8e3a1]/60 italic font-sans mt-0.5">
+                    *Mohon maaf apabila ada kesalahan penulisan nama/gelar
+                  </p>
+                </div>
+
+                {/* Tombol Salin Link Khusus Tamu Ini */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleCopyGuestLink}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[#3b0817] border border-[#cda142]/50 text-[#fae5aa] hover:bg-[#4d0c1e] text-xs font-semibold transition cursor-pointer"
+                  >
+                    {copiedGuestLink ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-300">Tautan Khusus Tamu Berhasil Disalin!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Salin Link Undangan untuk Tamu Ini (WhatsApp)</span>
+                      </>
+                    )}
+                  </button>
+                  <span className="text-[10px] text-stone-400 italic">
+                    Bisa langsung dibagikan ke WhatsApp tamu
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: DEDICATED NAMA TAMU COVER */}
+          {activeTab === 'tamu' && (
+            <div className="space-y-6">
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#170207] border-2 border-[#cda142]/50 space-y-4 shadow-xl">
+                <div className="flex items-center justify-between border-b border-[#cda142]/20 pb-2">
+                  <h4 className="font-cinzel text-xs font-bold text-[#fae5aa] uppercase tracking-wider flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-[#fae5aa]" />
+                    Atur Nama Tamu Undangan di Cover
+                  </h4>
+                  <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-800">
+                    Cover &amp; Kartu Penerima
+                  </span>
+                </div>
+
+                <p className="text-xs text-stone-300 leading-relaxed">
+                  Ketik nama tamu di bawah ini. Ketika Anda menekan tombol <b>Simpan Perubahan</b>, nama tamu di cover akan langsung berubah seketika, dan tautan undangan khusus tamu ini siap dibagikan.
+                </p>
+
+                <div>
+                  <label className="block text-xs text-[#fae5aa] mb-1.5 font-semibold">
+                    Nama Tamu / Penerima Undangan (Kepada Yth. Bapak/Ibu/Saudara/i) *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.guestName || ''}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        guestName: e.target.value,
+                      })
+                    }
+                    placeholder="Contoh: Bpk. Budi Santoso &amp; Keluarga"
+                    className="w-full px-4 py-3 rounded-xl bg-[#29050f] border-2 border-[#cda142] text-white text-base focus:outline-none focus:border-[#fae5aa] font-medium"
+                  />
+                </div>
+
+                {/* Pilihan Cepat */}
+                <div>
+                  <span className="text-[11px] text-stone-400 block mb-1.5 font-sans font-medium">
+                    Pilihan Cepat Contoh Format:
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      'Bpk. Budi Santoso & Keluarga',
+                      'Bpk. H. Ahmad & Ibu Siti',
+                      'Keluarga Besar Bpk. Rahmat',
+                      'Sahabat & Rekan Kerja',
+                      'Teman-teman Alumni',
+                      'Tamu Undangan Terhormat',
+                    ].map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, guestName: preset })}
+                        className="text-xs px-3 py-1.5 rounded-xl bg-[#2a0610] hover:bg-[#3d0a19] text-[#fae5aa] border border-[#cda142]/30 transition cursor-pointer"
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Pratinjau Tampilan Persis Seperti di Cover */}
+                <div className="bg-[#24040c]/90 border border-[#cda142]/60 rounded-2xl p-5 text-center shadow-inner">
+                  <p className="text-[11px] tracking-[0.2em] uppercase font-cinzel text-[#e5c07b] mb-1">
+                    Kepada Yth. Bapak/Ibu/Saudara/i:
+                  </p>
+                  <h2 className="font-playfair text-xl sm:text-2xl font-bold text-white tracking-wide py-1 truncate">
+                    {formData.guestName || 'Tamu Undangan Terhormat'}
+                  </h2>
+                  <p className="text-[10px] text-[#f8e3a1]/70 italic font-sans mt-0.5">
+                    *Mohon maaf apabila ada kesalahan penulisan nama/gelar
+                  </p>
+                </div>
+
+                {/* Salin Tautan WhatsApp */}
+                <div className="p-3.5 rounded-xl bg-[#28050e] border border-[#cda142]/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="text-left">
+                    <p className="text-xs font-semibold text-white">Bagikan Link Khusus Tamu Ini</p>
+                    <p className="text-[11px] text-stone-300">
+                      Tamu yang membuka link ini akan otomatis melihat namanya di cover.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyGuestLink}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#fae5aa] text-[#29050d] font-cinzel text-xs font-bold hover:brightness-105 transition cursor-pointer shadow whitespace-nowrap"
+                  >
+                    {copiedGuestLink ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-800" />
+                        <span>Tautan Tersalin!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Salin Link Tamu</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           )}

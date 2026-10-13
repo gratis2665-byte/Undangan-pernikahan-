@@ -21,13 +21,28 @@ import { DEFAULT_WEDDING_DATA, WeddingData } from '@/lib/wedding-data';
 function WeddingContent() {
   const searchParams = useSearchParams();
   const guestParam = searchParams.get('to');
-  const guestName = guestParam || 'Bpk. Budi Santoso & Keluarga';
 
   const [isOpen, setIsOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
   // Hydration-safe external store for wedding data
   const [weddingData, setWeddingData, resetWeddingData] = useWeddingData();
+
+  // Dynamic guest name: prioritize weddingData.guestName, then URL query param, then default
+  const guestName = (weddingData.guestName || guestParam || 'Bpk. Budi Santoso & Keluarga').trim();
+
+  const handleSaveWeddingData = (newData: WeddingData) => {
+    setWeddingData(newData);
+    if (typeof window !== 'undefined' && newData.guestName) {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('to', newData.guestName);
+        window.history.replaceState({}, '', url.toString());
+      } catch {
+        // ignore
+      }
+    }
+  };
 
   // Handle invitation opening
   const handleOpenInvitation = () => {
@@ -57,7 +72,7 @@ function WeddingContent() {
           isOpen={isAdminOpen}
           onClose={() => setIsAdminOpen(false)}
           data={weddingData}
-          onSave={setWeddingData}
+          onSave={handleSaveWeddingData}
           onReset={resetWeddingData}
         />
       )}

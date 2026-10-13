@@ -47,6 +47,7 @@ export function normalizeData(parsed: Partial<WeddingData>): WeddingData {
   return {
     ...DEFAULT_WEDDING_DATA,
     ...parsed,
+    guestName: typeof parsed.guestName === 'string' && parsed.guestName.trim() ? parsed.guestName.trim() : DEFAULT_WEDDING_DATA.guestName,
     groom: {
       ...DEFAULT_WEDDING_DATA.groom,
       ...(parsed.groom || {}),

@@ -9,6 +9,7 @@ export interface GalleryItem {
 }
 
 export interface WeddingData {
+  guestName: string;
   groom: {
     name: string;
     fullName: string;
@@ -95,6 +96,7 @@ export const DEFAULT_GALLERY: GalleryItem[] = [
 ];
 
 export const DEFAULT_WEDDING_DATA: WeddingData = {
+  guestName: 'Bpk. Budi Santoso & Keluarga',
   groom: {
     name: 'Satria',
     fullName: 'Satria Pratama, S.T.',
