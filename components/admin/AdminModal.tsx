@@ -21,6 +21,7 @@ import {
   RefreshCw,
   Mail,
   Copy,
+  QrCode,
 } from 'lucide-react';
 import { WeddingData, GalleryItem, DEFAULT_WEDDING_DATA } from '@/lib/wedding-data';
 import { compressImageFile } from '@/lib/image-compress';
@@ -57,21 +58,24 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
   const groomFileInputRef = useRef<HTMLInputElement>(null);
   const brideFileInputRef = useRef<HTMLInputElement>(null);
   const galleryFileInputRef = useRef<HTMLInputElement>(null);
+  const qrisFileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
   // Handle image file upload with automatic client-side canvas compression
   const handleImageFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: 'groom' | 'bride' | 'gallery'
+    type: 'groom' | 'bride' | 'gallery' | 'qris'
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
       setIsCompressing(true);
-      // Automatically compress and resize to max 720px jpeg (usually ~40-80KB)
-      const compressedDataUrl = await compressImageFile(file, 720, 0.75);
+      // For QRIS, use slightly higher quality 0.85 and 640px to ensure crisp barcode scanning
+      const maxDim = type === 'qris' ? 640 : 720;
+      const quality = type === 'qris' ? 0.85 : 0.75;
+      const compressedDataUrl = await compressImageFile(file, maxDim, quality);
 
       if (type === 'groom') {
         setFormData((prev) => ({
@@ -85,6 +89,14 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
         }));
       } else if (type === 'gallery') {
         setNewGalleryPhotoUrl(compressedDataUrl);
+      } else if (type === 'qris') {
+        setFormData((prev) => ({
+          ...prev,
+          bankAccounts: {
+            ...prev.bankAccounts,
+            qrisUrl: compressedDataUrl,
+          },
+        }));
       }
     } catch (err) {
       console.error('Gagal mengompresi gambar:', err);
@@ -236,7 +248,7 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
             { id: 'akad', label: 'Akad Nikah', icon: Calendar },
             { id: 'resepsi', label: 'Resepsi', icon: Settings },
             { id: 'ayat', label: 'Ayat Al-Qur’an', icon: BookOpen },
-            { id: 'rekening', label: 'Rekening Kado', icon: CreditCard },
+            { id: 'rekening', label: 'Rekening & QRIS', icon: QrCode },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -1194,9 +1206,136 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
             </div>
           )}
 
-          {/* TAB 6: REKENING & KADO */}
+          {/* TAB 6: REKENING & QRIS */}
           {activeTab === 'rekening' && (
-            <div className="space-y-4">
+            <div className="space-y-5">
+              {/* SECTION: UPLOAD & KELOLA QRIS */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#170207] border-2 border-[#d4af37] space-y-4 shadow-xl">
+                <div className="flex items-center justify-between border-b border-[#cda142]/20 pb-2">
+                  <h4 className="font-cinzel text-xs font-bold text-[#fae5aa] uppercase tracking-wider flex items-center gap-2">
+                    <QrCode className="w-4 h-4 text-[#fae5aa]" />
+                    QRIS Barcode Pembayaran Digital
+                  </h4>
+                  {formData.bankAccounts.qrisUrl ? (
+                    <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-700">
+                      ✓ QRIS Kustom Aktif
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-[#fae5aa]/80 bg-[#300611] px-2.5 py-0.5 rounded-full border border-[#cda142]/30">
+                      QRIS Bawaan (Default)
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-xs text-stone-300 leading-relaxed">
+                  Unggah foto atau screenshot QRIS Anda (BCA, Mandiri, BRI, BSI, GoPay, OVO, Dana, ShopeePay, atau QRIS All Payment apa pun). QRIS di popup amplop digital web akan <b>langsung berubah</b> seketika setelah disimpan!
+                </p>
+
+                {/* Upload & Preview Box */}
+                <div className="flex flex-col sm:flex-row items-center gap-5 bg-[#25050f] p-4 rounded-xl border border-[#cda142]/30">
+                  {/* Visual Preview */}
+                  <div className="w-44 h-44 bg-white p-2.5 rounded-2xl border-2 border-[#d4af37] shadow-inner flex flex-col items-center justify-center shrink-0 overflow-hidden relative">
+                    {formData.bankAccounts.qrisUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={formData.bankAccounts.qrisUrl}
+                        alt="Pratinjau QRIS"
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-stone-800">
+                        <svg viewBox="0 0 160 160" className="w-28 h-28 text-slate-900" fill="currentColor">
+                          <rect x="10" y="10" width="40" height="40" fill="#000" />
+                          <rect x="18" y="18" width="24" height="24" fill="#fff" />
+                          <rect x="24" y="24" width="12" height="12" fill="#000" />
+                          <rect x="110" y="10" width="40" height="40" fill="#000" />
+                          <rect x="118" y="18" width="24" height="24" fill="#fff" />
+                          <rect x="124" y="24" width="12" height="12" fill="#000" />
+                          <rect x="10" y="110" width="40" height="40" fill="#000" />
+                          <rect x="18" y="118" width="24" height="24" fill="#fff" />
+                          <rect x="24" y="124" width="12" height="12" fill="#000" />
+                          <rect x="60" y="20" width="12" height="12" />
+                          <rect x="80" y="15" width="12" height="12" />
+                          <rect x="65" y="45" width="12" height="12" />
+                          <rect x="85" y="45" width="12" height="12" />
+                          <rect x="60" y="60" width="40" height="40" fill="#901432" rx="6" />
+                          <text x="80" y="86" fill="#fff" fontSize="18" fontFamily="serif" textAnchor="middle" fontWeight="bold">SN</text>
+                          <rect x="115" y="65" width="12" height="12" />
+                          <rect x="135" y="85" width="12" height="12" />
+                          <rect x="20" y="70" width="12" height="12" />
+                          <rect x="35" y="85" width="12" height="12" />
+                          <rect x="60" y="115" width="12" height="12" />
+                          <rect x="85" y="125" width="12" height="12" />
+                          <rect x="110" y="115" width="12" height="12" />
+                          <rect x="130" y="135" width="12" height="12" />
+                        </svg>
+                        <span className="text-[10px] text-stone-500 font-sans font-medium mt-1">
+                          Barcode Standar
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions & Controls */}
+                  <div className="flex-1 space-y-3 text-center sm:text-left">
+                    <div>
+                      <p className="text-sm font-semibold text-white">
+                        {formData.bankAccounts.qrisUrl ? 'QRIS Kustom Terpasang' : 'Belum Ada QRIS Kustom'}
+                      </p>
+                      <p className="text-[11px] text-stone-300 mt-0.5">
+                        {formData.bankAccounts.qrisUrl
+                          ? 'Gambar QRIS ini akan tampil saat tamu menekan tombol "Tampilkan QRIS Barcode" di bagian amplop digital.'
+                          : 'Saat ini menggunakan barcode contoh. Unggah gambar QRIS asli Anda agar tamu dapat langsung scan.'}
+                      </p>
+                    </div>
+
+                    <input
+                      type="file"
+                      ref={qrisFileInputRef}
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleImageFileChange(e, 'qris')}
+                    />
+
+                    <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
+                      <button
+                        type="button"
+                        disabled={isCompressing}
+                        onClick={() => qrisFileInputRef.current?.click()}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#fae5aa] text-[#29050d] font-cinzel text-xs font-bold hover:brightness-105 transition cursor-pointer disabled:opacity-50 shadow"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>{isCompressing ? 'Mengompresi...' : formData.bankAccounts.qrisUrl ? 'Ganti Gambar QRIS' : 'Unggah Foto QRIS'}</span>
+                      </button>
+
+                      {formData.bankAccounts.qrisUrl && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              bankAccounts: {
+                                ...prev.bankAccounts,
+                                qrisUrl: '',
+                              },
+                            }))
+                          }
+                          className="px-3 py-2 rounded-xl bg-rose-950/60 text-rose-300 border border-rose-800 text-xs hover:bg-rose-900 transition cursor-pointer flex items-center gap-1"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>Kembalikan ke Default</span>
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="text-[10px] text-stone-400 bg-[#1c030b] p-2 rounded-lg border border-[#cda142]/20">
+                      💡 <b>Tips:</b> Gambar QRIS otomatis dikompresi agar ukuran tetap ringan dan barcode tetap tajam serta mudah discan oleh semua aplikasi perbankan &amp; e-wallet.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* REKENING BANK 1 */}
               <div className="p-4 rounded-2xl bg-[#170207] border border-[#cda142]/30 space-y-3">
                 <h4 className="font-cinzel text-xs font-bold text-[#fae5aa] uppercase tracking-wider">
                   Rekening Bank 1

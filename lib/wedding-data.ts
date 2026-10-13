@@ -52,6 +52,7 @@ export interface WeddingData {
     bank1: { name: string; number: string; holder: string };
     bank2: { name: string; number: string; holder: string };
     giftAddress: string;
+    qrisUrl?: string;
   };
   gallery: GalleryItem[];
 }
@@ -147,6 +148,7 @@ export const DEFAULT_WEDDING_DATA: WeddingData = {
       holder: 'Nadia Angela',
     },
     giftAddress: 'Jl. Senayan Indah No. 42, Kebayoran Baru, Jakarta Selatan 12190 (Penerima: Satria & Nadia)',
+    qrisUrl: '',
   },
   gallery: DEFAULT_GALLERY,
 };

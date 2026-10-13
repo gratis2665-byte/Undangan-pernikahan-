@@ -71,6 +71,7 @@ export function normalizeData(parsed: Partial<WeddingData>): WeddingData {
     bankAccounts: {
       ...DEFAULT_WEDDING_DATA.bankAccounts,
       ...(parsed.bankAccounts || {}),
+      qrisUrl: typeof parsed.bankAccounts?.qrisUrl === 'string' ? parsed.bankAccounts.qrisUrl : (DEFAULT_WEDDING_DATA.bankAccounts.qrisUrl || ''),
     },
     gallery: Array.isArray(parsed.gallery) && parsed.gallery.length > 0 ? parsed.gallery : DEFAULT_GALLERY,
   };

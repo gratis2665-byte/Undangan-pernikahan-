@@ -202,43 +202,66 @@ export function DigitalGiftSection({ data }: DigitalGiftSectionProps) {
                 {data.groom.name} &amp; {data.bride.name} Wedding Gift
               </p>
 
-              {/* High-fidelity Vector QRIS Preview */}
-              <div className="w-56 h-56 mx-auto bg-white p-4 rounded-2xl shadow-inner flex flex-col items-center justify-center mb-4">
-                <svg viewBox="0 0 160 160" className="w-full h-full text-slate-900" fill="currentColor">
-                  <rect x="10" y="10" width="40" height="40" fill="#000" />
-                  <rect x="18" y="18" width="24" height="24" fill="#fff" />
-                  <rect x="24" y="24" width="12" height="12" fill="#000" />
+              {/* QRIS Display - Either custom uploaded QRIS or default SVG */}
+              {data.bankAccounts.qrisUrl ? (
+                <div className="w-64 h-64 mx-auto bg-white p-3 rounded-2xl shadow-inner flex flex-col items-center justify-center mb-4 border border-[#cda142]/40 relative group">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={data.bankAccounts.qrisUrl}
+                    alt="QRIS Barcode Pembayaran"
+                    className="w-full h-full object-contain rounded-lg"
+                  />
+                </div>
+              ) : (
+                <div className="w-56 h-56 mx-auto bg-white p-4 rounded-2xl shadow-inner flex flex-col items-center justify-center mb-4">
+                  <svg viewBox="0 0 160 160" className="w-full h-full text-slate-900" fill="currentColor">
+                    <rect x="10" y="10" width="40" height="40" fill="#000" />
+                    <rect x="18" y="18" width="24" height="24" fill="#fff" />
+                    <rect x="24" y="24" width="12" height="12" fill="#000" />
 
-                  <rect x="110" y="10" width="40" height="40" fill="#000" />
-                  <rect x="118" y="18" width="24" height="24" fill="#fff" />
-                  <rect x="124" y="24" width="12" height="12" fill="#000" />
+                    <rect x="110" y="10" width="40" height="40" fill="#000" />
+                    <rect x="118" y="18" width="24" height="24" fill="#fff" />
+                    <rect x="124" y="24" width="12" height="12" fill="#000" />
 
-                  <rect x="10" y="110" width="40" height="40" fill="#000" />
-                  <rect x="18" y="118" width="24" height="24" fill="#fff" />
-                  <rect x="24" y="124" width="12" height="12" fill="#000" />
+                    <rect x="10" y="110" width="40" height="40" fill="#000" />
+                    <rect x="18" y="118" width="24" height="24" fill="#fff" />
+                    <rect x="24" y="124" width="12" height="12" fill="#000" />
 
-                  <rect x="60" y="20" width="12" height="12" />
-                  <rect x="80" y="15" width="12" height="12" />
-                  <rect x="65" y="45" width="12" height="12" />
-                  <rect x="85" y="45" width="12" height="12" />
-                  
-                  <rect x="60" y="60" width="40" height="40" fill="#901432" rx="6" />
-                  <text x="80" y="86" fill="#fff" fontSize="18" fontFamily="serif" textAnchor="middle" fontWeight="bold">SN</text>
+                    <rect x="60" y="20" width="12" height="12" />
+                    <rect x="80" y="15" width="12" height="12" />
+                    <rect x="65" y="45" width="12" height="12" />
+                    <rect x="85" y="45" width="12" height="12" />
+                    
+                    <rect x="60" y="60" width="40" height="40" fill="#901432" rx="6" />
+                    <text x="80" y="86" fill="#fff" fontSize="18" fontFamily="serif" textAnchor="middle" fontWeight="bold">SN</text>
 
-                  <rect x="115" y="65" width="12" height="12" />
-                  <rect x="135" y="85" width="12" height="12" />
-                  <rect x="20" y="70" width="12" height="12" />
-                  <rect x="35" y="85" width="12" height="12" />
+                    <rect x="115" y="65" width="12" height="12" />
+                    <rect x="135" y="85" width="12" height="12" />
+                    <rect x="20" y="70" width="12" height="12" />
+                    <rect x="35" y="85" width="12" height="12" />
 
-                  <rect x="60" y="115" width="12" height="12" />
-                  <rect x="85" y="125" width="12" height="12" />
-                  <rect x="110" y="115" width="12" height="12" />
-                  <rect x="130" y="135" width="12" height="12" />
-                </svg>
-              </div>
+                    <rect x="60" y="115" width="12" height="12" />
+                    <rect x="85" y="125" width="12" height="12" />
+                    <rect x="110" y="115" width="12" height="12" />
+                    <rect x="130" y="135" width="12" height="12" />
+                  </svg>
+                </div>
+              )}
+
+              {data.bankAccounts.qrisUrl && (
+                <div className="mb-4">
+                  <a
+                    href={data.bankAccounts.qrisUrl}
+                    download="QRIS-Pernikahan.jpg"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-sans font-medium text-[#fae5aa] bg-[#3a0816] hover:bg-[#4d0c1e] border border-[#cda142]/40 transition"
+                  >
+                    <span>Unduh Gambar QRIS</span>
+                  </a>
+                </div>
+              )}
 
               <p className="text-[11px] text-stone-300 font-sans">
-                Scan dengan GoPay, OVO, Dana, BCA Mobile, atau aplikasi bank apa pun.
+                Scan dengan GoPay, OVO, Dana, BCA Mobile, ShopeePay, atau aplikasi mobile banking apa pun.
               </p>
             </div>
           </motion.div>
