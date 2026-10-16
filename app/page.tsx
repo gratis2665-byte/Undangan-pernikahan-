@@ -88,6 +88,11 @@ function WeddingContent() {
 
   const handleSaveWeddingData = (newData: WeddingData) => {
     setWeddingData(newData);
+    if (typeof document !== 'undefined') {
+      const g = (newData.groom?.name || newData.groom?.fullName?.split(' ')[0] || 'Satria').trim();
+      const b = (newData.bride?.name || newData.bride?.fullName?.split(' ')[0] || 'Nadia').trim();
+      document.title = `The Wedding of ${g} & ${b}`;
+    }
     if (typeof window !== 'undefined' && newData.guestName) {
       try {
         const url = new URL(window.location.href);

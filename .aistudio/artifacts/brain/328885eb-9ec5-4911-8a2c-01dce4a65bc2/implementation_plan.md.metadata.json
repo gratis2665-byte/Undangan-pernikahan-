@@ -1,6 +1,6 @@
 {
-  "summary": "Rencana perbaikan judul label tab browser agar ringkas dan elegan dengan format 'The Wedding of [Nama Pria] & [Nama Wanita]' pada app/layout.tsx, metadata web, dan sinkronisasi dinamis pada browser.",
-  "updatedAt": "2026-10-16T13:12:58.176095958Z",
+  "summary": "Rencana implementasi sinkronisasi otomatis judul tab browser (The Wedding of [Nama Pria] & [Nama Wanita]) secara realtime setiap kali pengguna mengubah nama mempelai di menu Admin, saat halaman pertama kali dimuat dari localStorage, maupun saat tautan dibuka.",
+  "updatedAt": "2026-10-16T13:21:27.769140335Z",
   "requestFeedback": true,
   "userFacing": true
 }

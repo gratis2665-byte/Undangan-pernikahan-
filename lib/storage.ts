@@ -21,6 +21,14 @@ function notifyListeners() {
   });
 }
 
+export function updateBrowserTabTitle(data?: Partial<WeddingData>) {
+  if (typeof document === 'undefined') return;
+  const target = data || cachedWeddingData;
+  const groom = (target.groom?.name || target.groom?.fullName?.split(' ')[0] || 'Satria').trim();
+  const bride = (target.bride?.name || target.bride?.fullName?.split(' ')[0] || 'Nadia').trim();
+  document.title = `The Wedding of ${groom} & ${bride}`;
+}
+
 function initFromStorage(force = false): boolean {
   if (typeof window === 'undefined') return false;
   if (hasLoadedFromStorage && !force) return false;
@@ -31,6 +39,7 @@ function initFromStorage(force = false): boolean {
     if (raw) {
       cachedWeddingData = normalizeData(JSON.parse(raw));
       changed = true;
+      updateBrowserTabTitle(cachedWeddingData);
     }
   } catch (err) {
     console.warn('Failed to parse wedding data from localStorage:', err);
@@ -163,6 +172,7 @@ export function saveWeddingData(newData: WeddingData) {
     } catch (err) {
       console.warn('LocalStorage save quota or permission issue:', err);
     }
+    updateBrowserTabTitle(cachedWeddingData);
     notifyListeners();
     window.dispatchEvent(new Event(WEDDING_DATA_EVENT));
 
@@ -206,6 +216,7 @@ export function resetWeddingData() {
     } catch (err) {
       console.warn('LocalStorage reset issue:', err);
     }
+    updateBrowserTabTitle(DEFAULT_WEDDING_DATA);
     notifyListeners();
     window.dispatchEvent(new Event(WEDDING_DATA_EVENT));
   }
