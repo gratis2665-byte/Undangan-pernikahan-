@@ -2,16 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Calendar, Clock, MapPin, ExternalLink, CalendarPlus } from 'lucide-react';
-import { WeddingData } from '@/lib/wedding-data';
+import { Calendar, Clock, MapPin, ExternalLink, CalendarPlus, Sparkles } from 'lucide-react';
+import { WeddingData, parseWeddingTimestamp } from '@/lib/wedding-data';
 
 interface EventSectionProps {
   data: WeddingData;
 }
 
 export function EventSection({ data }: EventSectionProps) {
-  // Countdown to Wedding: 24 Oktober 2026, 08:00:00 WIB (UTC+7)
-  const targetDate = new Date('2026-10-24T08:00:00+07:00').getTime();
+  // Dynamically resolve target timestamp whenever data (date/time/weddingDateIso) changes
+  const targetDate = parseWeddingTimestamp(data);
 
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -19,6 +19,7 @@ export function EventSection({ data }: EventSectionProps) {
     minutes: 0,
     seconds: 0,
   });
+  const [isPast, setIsPast] = useState(false);
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -32,6 +33,10 @@ export function EventSection({ data }: EventSectionProps) {
           minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
           seconds: Math.floor((difference % (1000 * 60)) / 1000),
         });
+        setIsPast(false);
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setIsPast(true);
       }
     };
 
@@ -46,8 +51,15 @@ export function EventSection({ data }: EventSectionProps) {
       `Pernikahan Islami ${data.groom.fullName} & ${data.bride.fullName}.\n${data.akad.title}: ${data.akad.venue} (${data.akad.time})\n${data.resepsi.title}: ${data.resepsi.venue} (${data.resepsi.time})`
     );
     const location = encodeURIComponent(`${data.akad.venue}, ${data.akad.address}`);
-    const dates = '20261024T010000Z/20261024T080000Z';
-    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+    try {
+      const dStart = new Date(targetDate);
+      const dEnd = new Date(targetDate + 4 * 60 * 60 * 1000);
+      const formatCalDate = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      const dates = `${formatCalDate(dStart)}/${formatCalDate(dEnd)}`;
+      return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
+    } catch {
+      return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}`;
+    }
   };
 
   return (
@@ -93,9 +105,16 @@ export function EventSection({ data }: EventSectionProps) {
           viewport={{ once: true }}
           className="max-w-md mx-auto mb-16 p-4 rounded-2xl bg-[#390614]/80 border border-[#cda142]/40 backdrop-blur-md shadow-xl"
         >
-          <p className="text-xs uppercase font-cinzel tracking-widest text-[#fae5aa] mb-4 font-semibold">
-            Menghitung Hari Bahagia
+          <p className="text-xs uppercase font-cinzel tracking-widest text-[#fae5aa] mb-3 font-semibold">
+            {isPast ? 'Momen Bahagia Telah Tiba' : 'Menghitung Hari Bahagia'}
           </p>
+
+          {isPast && (
+            <div className="mb-3 py-1.5 px-3 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 text-xs font-cinzel font-semibold inline-flex items-center gap-1.5 shadow">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Hari Bahagia Telah Tiba! Alhamdulillah</span>
+            </div>
+          )}
 
           <div className="grid grid-cols-4 gap-2 sm:gap-3">
             {[
@@ -108,7 +127,7 @@ export function EventSection({ data }: EventSectionProps) {
                 key={idx}
                 className="flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl bg-[#20030a] border border-[#cda142]/20"
               >
-                <span className="font-cinzel text-2xl sm:text-3xl font-bold text-[#fae5aa] tabular-nums">
+                <span suppressHydrationWarning className="font-cinzel text-2xl sm:text-3xl font-bold text-[#fae5aa] tabular-nums">
                   {String(unit.val).padStart(2, '0')}
                 </span>
                 <span className="text-[10px] sm:text-xs text-stone-300 font-sans tracking-wide mt-1">

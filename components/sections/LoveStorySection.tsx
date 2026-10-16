@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Camera, Heart, X, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
-import { WeddingData, GalleryItem } from '@/lib/wedding-data';
+import { WeddingData, GalleryItem, StoryItem, DEFAULT_STORIES } from '@/lib/wedding-data';
 
 interface LoveStorySectionProps {
   data: WeddingData;
@@ -12,28 +12,7 @@ interface LoveStorySectionProps {
 export function LoveStorySection({ data }: LoveStorySectionProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryItem | null>(null);
 
-  const stories = [
-    {
-      year: '2020',
-      title: 'Awal Pertemuan',
-      description: 'Pertama kali kami dipertemukan dalam sebuah seminar kolaborasi arsitektur dan desain di Jakarta. Percakapan singkat yang bermula dari secangkir kopi berlanjut menjadi ikatan yang tak pernah kami duga.',
-    },
-    {
-      year: '2022',
-      title: 'Menjalin Kasih',
-      description: 'Setelah dua tahun saling mengenal dan bertumbuh dalam iman, kami memutuskan untuk melangkah bersama dengan komitmen saling melengkapi dan mendukung cita-cita masing-masing.',
-    },
-    {
-      year: '2025',
-      title: 'Lamaran Romantis',
-      description: 'Di bawah hangatnya senja dan disaksikan oleh kedua keluarga besar, Satria melamar Nadia dengan penuh ketulusan. Sebuah jawaban &ldquo;Yes&rdquo; yang memulai babak baru perjalanan kami.',
-    },
-    {
-      year: '2026',
-      title: 'Menuju Ikrar Suci',
-      description: `Hari yang dinanti telah tiba. Kami bersiap mengikat janji suci dalam ikrar akad nikah di ${data.akad.venue}, mengawali kehidupan rumah tangga dalam ridho dan berkah Ilahi.`,
-    },
-  ];
+  const storiesList: StoryItem[] = data.stories && data.stories.length > 0 ? data.stories : DEFAULT_STORIES;
 
   const galleryList: GalleryItem[] = data.gallery || [];
 
@@ -75,9 +54,9 @@ export function LoveStorySection({ data }: LoveStorySectionProps) {
         </motion.h2>
 
         <div className="relative border-l border-[#cda142]/30 ml-4 md:ml-32 text-left space-y-10 mb-24">
-          {stories.map((story, idx) => (
+          {storiesList.map((story, idx) => (
             <motion.div
-              key={idx}
+              key={story.id || idx}
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}

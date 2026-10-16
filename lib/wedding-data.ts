@@ -1,11 +1,16 @@
-'use client';
-
 export interface GalleryItem {
   id: string;
   title: string;
   category: string;
   photoUrl?: string;
   quote: string;
+}
+
+export interface StoryItem {
+  id: string;
+  year: string;
+  title: string;
+  description: string;
 }
 
 export interface WeddingData {
@@ -27,6 +32,7 @@ export interface WeddingData {
     photoUrl?: string;
   };
   eventDateDisplay: string;
+  weddingDateIso?: string; // ISO date-time string e.g. "2026-10-24T08:00"
   akad: {
     title: string;
     date: string;
@@ -55,6 +61,92 @@ export interface WeddingData {
     qrisUrl?: string;
   };
   gallery: GalleryItem[];
+  stories?: StoryItem[];
+}
+
+export const DEFAULT_STORIES: StoryItem[] = [
+  {
+    id: 's-1',
+    year: '2020',
+    title: 'Awal Pertemuan',
+    description: 'Pertama kali kami dipertemukan dalam sebuah seminar kolaborasi arsitektur dan desain di Jakarta. Percakapan singkat yang bermula dari secangkir kopi berlanjut menjadi ikatan yang tak pernah kami duga.',
+  },
+  {
+    id: 's-2',
+    year: '2022',
+    title: 'Menjalin Kasih',
+    description: 'Setelah dua tahun saling mengenal dan bertumbuh dalam iman, kami memutuskan untuk melangkah bersama dengan komitmen saling melengkapi dan mendukung cita-cita masing-masing.',
+  },
+  {
+    id: 's-3',
+    year: '2025',
+    title: 'Lamaran Romantis',
+    description: 'Di bawah hangatnya senja dan disaksikan oleh kedua keluarga besar, Satria melamar Nadia dengan penuh ketulusan. Sebuah jawaban "Yes" yang memulai babak baru perjalanan kami.',
+  },
+  {
+    id: 's-4',
+    year: '2026',
+    title: 'Menuju Ikrar Suci',
+    description: 'Hari yang dinanti telah tiba. Kami bersiap mengikat janji suci dalam ikrar akad nikah, mengawali kehidupan rumah tangga dalam ridho dan berkah Ilahi.',
+  },
+];
+
+/**
+ * Robustly parses wedding date and time into timestamp for countdown timer
+ */
+export function parseWeddingTimestamp(data: WeddingData): number {
+  if (data.weddingDateIso) {
+    const parsed = new Date(data.weddingDateIso).getTime();
+    if (!isNaN(parsed)) return parsed;
+  }
+
+  const dateStr = data.akad?.date || data.eventDateDisplay || '';
+  const monthMap: Record<string, number> = {
+    januari: 0, jan: 0,
+    februari: 1, feb: 1,
+    maret: 2, mar: 2,
+    april: 3, apr: 3,
+    mei: 4, may: 4,
+    juni: 5, jun: 5,
+    juli: 6, jul: 6,
+    agustus: 7, agu: 7, agt: 7, aug: 7,
+    september: 8, sep: 8,
+    oktober: 9, okt: 9, oct: 9,
+    november: 10, nov: 10,
+    desember: 11, des: 11, dec: 11,
+  };
+
+  const indonesianMatch = dateStr.match(/(\d{1,2})\s+([a-zA-Z]+)\s+(\d{4})/);
+  if (indonesianMatch) {
+    const day = parseInt(indonesianMatch[1], 10);
+    const monthKey = indonesianMatch[2].toLowerCase();
+    const year = parseInt(indonesianMatch[3], 10);
+    if (monthMap[monthKey] !== undefined) {
+      let hours = 8;
+      let minutes = 0;
+      const timeMatch = (data.akad?.time || '').match(/(\d{1,2})[:.](\d{2})/);
+      if (timeMatch) {
+        hours = parseInt(timeMatch[1], 10);
+        minutes = parseInt(timeMatch[2], 10);
+      }
+      const d = new Date(year, monthMap[monthKey], day, hours, minutes);
+      if (!isNaN(d.getTime())) return d.getTime();
+    }
+  }
+
+  const numMatch = (data.eventDateDisplay || '').match(/(\d{1,2})\s*[/.-]\s*(\d{1,2})\s*[/.-]\s*(\d{4})/);
+  if (numMatch) {
+    const day = parseInt(numMatch[1], 10);
+    const month = parseInt(numMatch[2], 10) - 1;
+    const year = parseInt(numMatch[3], 10);
+    const d = new Date(year, month, day, 8, 0);
+    if (!isNaN(d.getTime())) return d.getTime();
+  }
+
+  const direct = Date.parse(dateStr);
+  if (!isNaN(direct)) return direct;
+
+  return new Date('2026-10-24T08:00:00+07:00').getTime();
 }
 
 export const DEFAULT_GALLERY: GalleryItem[] = [
@@ -115,6 +207,7 @@ export const DEFAULT_WEDDING_DATA: WeddingData = {
     photoUrl: '',
   },
   eventDateDisplay: '24 . 10 . 2026',
+  weddingDateIso: '2026-10-24T08:00',
   akad: {
     title: 'Akad Nikah',
     date: 'Sabtu, 24 Oktober 2026',
@@ -151,4 +244,5 @@ export const DEFAULT_WEDDING_DATA: WeddingData = {
     qrisUrl: '',
   },
   gallery: DEFAULT_GALLERY,
+  stories: DEFAULT_STORIES,
 };

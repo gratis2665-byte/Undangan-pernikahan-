@@ -7,10 +7,22 @@ import { WeddingData, DEFAULT_WEDDING_DATA } from '@/lib/wedding-data';
 
 interface ClosingSectionProps {
   data?: WeddingData;
+  onOpenAdmin?: () => void;
 }
 
-export function ClosingSection({ data = DEFAULT_WEDDING_DATA }: ClosingSectionProps) {
+export function ClosingSection({ data = DEFAULT_WEDDING_DATA, onOpenAdmin }: ClosingSectionProps) {
   const monogram = `${data.groom.name.charAt(0)}${data.bride.name.charAt(0)}`;
+  const [tapCount, setTapCount] = React.useState(0);
+
+  const handleMonogramTap = () => {
+    if (!onOpenAdmin) return;
+    const next = tapCount + 1;
+    setTapCount(next);
+    if (next >= 6) {
+      setTapCount(0);
+      onOpenAdmin();
+    }
+  };
 
   return (
     <footer className="relative py-20 px-4 bg-[#140207] text-center border-t border-[#cda142]/20 overflow-hidden">
@@ -19,7 +31,9 @@ export function ClosingSection({ data = DEFAULT_WEDDING_DATA }: ClosingSectionPr
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-[#350714] border border-[#d4af37] shadow-xl"
+          onClick={handleMonogramTap}
+          title="Monogram Royal"
+          className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-[#350714] border border-[#d4af37] shadow-xl cursor-pointer select-none active:scale-95 transition-transform"
         >
           <span className="font-playfair font-bold text-2xl text-[#fae5aa]">
             {monogram}

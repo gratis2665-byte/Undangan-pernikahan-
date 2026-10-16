@@ -266,7 +266,7 @@ export function BaroqueMedallion({
                 </div>
 
                 {/* Couple Names on Cover */}
-                <p className="text-[12px] sm:text-sm text-[#fae5aa] tracking-[0.2em] uppercase font-cinzel mt-2 font-bold filter drop-shadow">
+                <p suppressHydrationWarning className="text-[12px] sm:text-sm text-[#fae5aa] tracking-[0.2em] uppercase font-cinzel mt-2 font-bold filter drop-shadow">
                   {groomName} &amp; {brideName}
                 </p>
 
@@ -287,7 +287,7 @@ export function BaroqueMedallion({
                   Walimatul Ursy
                 </span>
 
-                <h1 className="font-script text-4xl sm:text-5xl text-[#fff8e1] leading-tight filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.85)] py-0.5 truncate max-w-[240px]">
+                <h1 suppressHydrationWarning className="font-script text-4xl sm:text-5xl text-[#fff8e1] leading-tight filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.85)] py-0.5 truncate max-w-[240px]">
                   {groomName}
                 </h1>
                 
@@ -295,13 +295,13 @@ export function BaroqueMedallion({
                   &amp;
                 </span>
 
-                <h1 className="font-script text-4xl sm:text-5xl text-[#fff8e1] leading-tight filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.85)] py-0.5 truncate max-w-[240px]">
+                <h1 suppressHydrationWarning className="font-script text-4xl sm:text-5xl text-[#fff8e1] leading-tight filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.85)] py-0.5 truncate max-w-[240px]">
                   {brideName}
                 </h1>
 
                 <div className="w-20 h-[1.5px] bg-gradient-to-r from-transparent via-[#d4af37] to-transparent my-1.5" />
 
-                <p className="font-cinzel text-[11px] tracking-widest text-[#fae5aa]/90 font-semibold">
+                <p suppressHydrationWarning className="font-cinzel text-[11px] tracking-widest text-[#fae5aa]/90 font-semibold">
                   {data.eventDateDisplay}
                 </p>
 
@@ -328,7 +328,7 @@ export function BaroqueMedallion({
             Kepada Yth. Bapak/Ibu/Saudara/i:
           </p>
           
-          <h2 className="font-playfair text-xl sm:text-2xl font-bold text-white tracking-wide py-0.5 truncate max-w-full">
+          <h2 suppressHydrationWarning className="font-playfair text-xl sm:text-2xl font-bold text-white tracking-wide py-0.5 truncate max-w-full">
             {guestName || data?.guestName || 'Tamu Undangan Terhormat'}
           </h2>
 

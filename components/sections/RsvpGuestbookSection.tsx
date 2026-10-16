@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Send, CheckCircle, MessageSquareQuote, Heart, CalendarCheck } from 'lucide-react';
 import { useWishes, Wish } from '@/lib/wishes-store';
@@ -11,6 +11,15 @@ interface RsvpGuestbookProps {
 
 export function RsvpGuestbookSection({ initialGuestName = '' }: RsvpGuestbookProps) {
   const [name, setName] = useState(initialGuestName);
+  const [prevGuest, setPrevGuest] = useState(initialGuestName);
+
+  if (prevGuest !== initialGuestName) {
+    setPrevGuest(initialGuestName);
+    if (initialGuestName && initialGuestName !== 'Bpk. Budi Santoso & Keluarga') {
+      setName(initialGuestName);
+    }
+  }
+
   const [status, setStatus] = useState('Hadir');
   const [pax, setPax] = useState('2');
   const [message, setMessage] = useState('');
@@ -111,6 +120,7 @@ export function RsvpGuestbookSection({ initialGuestName = '' }: RsvpGuestbookPro
                   <input
                     type="text"
                     required
+                    suppressHydrationWarning
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Contoh: Bpk. Budi Santoso"
@@ -185,7 +195,7 @@ export function RsvpGuestbookSection({ initialGuestName = '' }: RsvpGuestbookPro
             className="flex flex-col p-6 sm:p-8 rounded-3xl bg-[#29050f]/90 border border-[#cda142]/40 backdrop-blur-sm shadow-xl max-h-[520px]"
           >
             <div className="flex items-center justify-between pb-4 border-b border-[#cda142]/20 mb-4">
-              <h3 className="font-playfair text-xl font-bold text-white flex items-center gap-2">
+              <h3 suppressHydrationWarning className="font-playfair text-xl font-bold text-white flex items-center gap-2">
                 <MessageSquareQuote className="w-5 h-5 text-[#e5c07b]" />
                 Buku Ucapan ({wishes.length})
               </h3>
@@ -194,7 +204,7 @@ export function RsvpGuestbookSection({ initialGuestName = '' }: RsvpGuestbookPro
               </span>
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-3.5 pr-2 custom-scrollbar">
+            <div suppressHydrationWarning className="flex-1 overflow-y-auto space-y-3.5 pr-2 custom-scrollbar">
               {wishes.map((wish) => (
                 <div
                   key={wish.id}

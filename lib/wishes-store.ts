@@ -49,28 +49,49 @@ const STORAGE_KEY = 'royal_wedding_wishes_sn';
 
 let cachedWishes: Wish[] = DEFAULT_WISHES;
 let cachedRawWishes: string | null = null;
+let hasWishesHydrated = false;
 
-function subscribeWishes(callback: () => void) {
-  if (typeof window === 'undefined') return () => {};
-  window.addEventListener('storage', callback);
-  window.addEventListener(WISHES_EVENT, callback);
-  return () => {
-    window.removeEventListener('storage', callback);
-    window.removeEventListener(WISHES_EVENT, callback);
-  };
-}
-
-function getWishesClientSnapshot(): Wish[] {
-  if (typeof window === 'undefined') return DEFAULT_WISHES;
+function loadWishesFromStorage(): boolean {
+  if (typeof window === 'undefined') return false;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw !== cachedRawWishes) {
+    if (raw && raw !== cachedRawWishes) {
       cachedRawWishes = raw;
-      cachedWishes = raw ? JSON.parse(raw) : DEFAULT_WISHES;
+      cachedWishes = JSON.parse(raw);
+      return true;
     }
   } catch {
     cachedWishes = DEFAULT_WISHES;
   }
+  return false;
+}
+
+function subscribeWishes(callback: () => void) {
+  if (typeof window === 'undefined') return () => {};
+
+  if (!hasWishesHydrated) {
+    hasWishesHydrated = true;
+    const changed = loadWishesFromStorage();
+    if (changed) {
+      callback();
+    }
+  }
+
+  const handleUpdate = () => {
+    loadWishesFromStorage();
+    callback();
+  };
+
+  window.addEventListener('storage', handleUpdate);
+  window.addEventListener(WISHES_EVENT, handleUpdate);
+  return () => {
+    window.removeEventListener('storage', handleUpdate);
+    window.removeEventListener(WISHES_EVENT, handleUpdate);
+  };
+}
+
+function getWishesClientSnapshot(): Wish[] {
+  if (typeof window === 'undefined' || !hasWishesHydrated) return DEFAULT_WISHES;
   return cachedWishes;
 }
 
@@ -79,11 +100,14 @@ function getWishesServerSnapshot(): Wish[] {
 }
 
 export function addWishToStorage(newWish: Wish) {
+  hasWishesHydrated = true;
   if (typeof window !== 'undefined') {
     try {
-      const current = getWishesClientSnapshot();
+      const current = cachedWishes;
       const updated = [newWish, ...current];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      cachedWishes = updated;
+      cachedRawWishes = JSON.stringify(updated);
+      localStorage.setItem(STORAGE_KEY, cachedRawWishes);
       window.dispatchEvent(new Event(WISHES_EVENT));
     } catch {
       // fallback

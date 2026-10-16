@@ -144,7 +144,7 @@ export function CoupleSection({ data, onOpenAdmin }: CoupleSectionProps) {
               </div>
             </div>
 
-            <h3 className="font-playfair text-2xl font-bold text-[#fae5aa] mb-1">
+            <h3 suppressHydrationWarning className="font-playfair text-2xl font-bold text-[#fae5aa] mb-1">
               {data.groom.fullName}
             </h3>
 
@@ -236,7 +236,7 @@ export function CoupleSection({ data, onOpenAdmin }: CoupleSectionProps) {
               </div>
             </div>
 
-            <h3 className="font-playfair text-2xl font-bold text-[#fae5aa] mb-1">
+            <h3 suppressHydrationWarning className="font-playfair text-2xl font-bold text-[#fae5aa] mb-1">
               {data.bride.fullName}
             </h3>
 
