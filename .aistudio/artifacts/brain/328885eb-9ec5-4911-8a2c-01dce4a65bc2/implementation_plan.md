@@ -1,54 +1,27 @@
-# Rencana Implementasi: Sinkronisasi Data Lintas Browser & Ekspor Vercel
+# Rencana Implementasi: Perbaikan Judul Label Tab Browser
 
-## 1. Analisis Masalah (Root Cause)
-1. **Penyimpanan Lokal (LocalStorage Only)**: Saat ini, ketika pengguna mengubah data di panel Admin (nama kedua mempelai, tanggal akad, countdown timer, kisah cinta, foto, rekening), data tersebut hanya tersimpan di memori `localStorage` browser pengedit (admin).
-2. **Link Tamu Belum Menyertakan Payload**: Tombol *Salin Link Tamu* saat ini hanya menyalin URL dengan parameter nama penerima saja (`?to=NamaTamu`), tanpa menyertakan paket data undangan. Akibatnya, saat link dibuka di HP tamu, WhatsApp, perangkat lain, atau browser lain, website kembali memuat data default template (*Sulthan & Nabila*).
-3. **Tab Publikasi Vercel Belum Tampil di Form**: Menu navigasi *Publikasi Vercel & Tamu* sudah terdaftar di tab atas, namun bagian konten formulirnya belum terpasang di dalam body modal.
-
----
-
-## 2. Solusi yang Akan Diimplementasikan (Berdasarkan Pilihan Pengguna)
-
-Sesuai jawaban Anda: **Kombinasi Link Berbagi Otomatis + Ekspor File Vercel** serta **Generator Link Tamu Otomatis di Panel Admin**:
-
-### A. Generator Link Berbagi & Link Tamu Otomatis (Otomatis Tampil di Semua Browser)
-- **Otomatis Menyertakan Data Undangan (`wd=...`)**: Setiap kali tombol *Salin Link Tamu* atau *Salin Link Berbagi* ditekan, sistem secara cerdas membuat link yang memuat seluruh konfigurasi mempelai, tanggal pernikahan, kisah cinta, dan rekening dalam format terenkripsi URL-aman (`base64url`).
-- **Otomatis Menyimpan di Browser Penerima**: Ketika tamu atau siapa pun membuka link tersebut di WhatsApp, Safari, Chrome HP, maupun browser lain:
-  1. Halaman web secara otomatis membaca parameter data undangan.
-  2. Mengisi seluruh nama mempelai, hitungan mundur, foto, dan kisah cinta secara instan.
-  3. Menyimpannya ke browser penerima agar saat mereka membuka kembali tanpa parameter, data tetap tersimpan.
-  4. Membersihkan URL secara elegan sehingga tampilan address bar tetap rapi.
-- **Generator Link Tamu Cepat**: Menyediakan input nama tamu dengan pilihan preset populer, tombol **Salin Link Tamu (Lengkap dengan Data)**, tombol **Kirim via WhatsApp** dengan draft pesan undangan islami siap kirim, dan tombol **Buka Pratinjau**.
-
-### B. Fitur Ekspor File `wedding-data.ts` untuk Vercel / GitHub (Permanen Tanpa URL Panjang)
-- Menyediakan tab khusus **Publikasi Vercel & Ekspor** di panel Admin dengan fitur:
-  1. **Salin Kode `lib/wedding-data.ts`**: Tombol 1-klik untuk menyalin seluruh kode TypeScript yang sudah terisi data pengantin asli Anda.
-  2. **Unduh File `wedding-data.ts`**: Mengunduh langsung file `.ts` siap pakai.
-  3. **Panduan Praktis Vercel**: Instruksi singkat langkah demi langkah mengganti file di repositori GitHub/Vercel agar website yang dideploy langsung menampilkan data Anda secara permanen sebagai data bawaan (default).
-  4. **Cadangkan (Export JSON) & Pulihkan (Import JSON)**: Fitur backup data agar Anda dapat memindahkan pengaturan antar perangkat atau menyimpan cadangan sewaktu-waktu.
+## 1. Analisis Masalah
+Berdasarkan tangkapan layar yang dilampirkan pengguna (`IMG_2100.jpeg`), judul pada tab browser saat ini menampilkan teks panjang:
+`The Royal Isla...` (terpotong dari judul awal `The Royal Islamic Wedding of Satria & Nadia`).
+Pengguna menginginkan agar label browser lebih ringkas dan sesuai dengan nama web undangan pernikahan, dengan format:
+`The Wedding of [Nama Pria] & [Nama Wanita]` (Contoh bawaan: `The Wedding of Satria & Nadia`).
 
 ---
 
-## 3. Rencana Perubahan Berkas (Files to Modify)
+## 2. Rincian Perubahan yang Akan Dilakukan
 
-1. **`lib/share-link.ts`**:
-   - Memastikan encoding dan decoding data undangan mencakup seluruh data (mempelai pria & wanita, tanggal ISO & tampilan, kisah cinta, galeri foto, rekening bank & QRIS).
-   - Memastikan generator kode `wedding-data.ts` menghasilkan kode TypeScript yang bersih, valid, dan bebas error.
+### A. Perbarui Metadata di `app/layout.tsx`
+- Mengubah `title` utama dari `The Royal Islamic Wedding of Satria & Nadia` menjadi format ringkas:
+  `The Wedding of Satria & Nadia`.
+- Menyesuaikan `openGraph.title` dan `twitter.title` agar seragam saat dibagikan di media sosial atau WhatsApp.
 
-2. **`components/admin/AdminModal.tsx`**:
-   - Memperbarui fungsi `handleCopyGuestLink` agar menyertakan data undangan lengkap secara default.
-   - Menambahkan komponen lengkap untuk Tab **Publikasi Vercel & Tamu**:
-     - Generator Link Tamu Otomatis + Tombol WhatsApp siap kirim.
-     - Pratinjau Link yang akan dibagikan.
-     - Tombol Salin Kode TypeScript & Unduh File `wedding-data.ts`.
-     - Panduan deploy Vercel/GitHub dalam bahasa Indonesia yang mudah dipahami.
-     - Fitur Ekspor & Impor JSON (Backup & Restore).
-
-3. **`app/page.tsx`**:
-   - Memastikan penanganan URL parameter `wd` berjalan lancar saat pertama kali dibuka di browser atau perangkat baru, langsung mengaktifkan data kustom dan menyinkronkannya tanpa kedipan layar (hydration safe).
+### B. Sinkronisasi Dinamis di `app/page.tsx`
+- Menambahkan efek ringan agar ketika halaman dimuat di browser pengguna, `document.title` secara otomatis menggunakan format:
+  `The Wedding of ${groomName} & ${brideName}`.
+- Hal ini memastikan label tab browser selalu rapi, pas di layar HP/browser tanpa terpotong berlebihan, dan langsung mengikuti nama mempelai.
 
 ---
 
-## 4. Verifikasi dan Pengujian
-- Menjalankan `compile_applet` dan `lint_applet` untuk memastikan tidak ada kesalahan kompilasi atau TypeScript.
-- Memverifikasi bahwa link undangan tamu yang disalin membawa seluruh data mempelai dan saat dibuka di browser/tab baru, seluruh data langsung berganti sesuai input Admin.
+## 3. Rencana Pengujian & Verifikasi
+- Memeriksa berkas `app/layout.tsx` dan memastikan judul berformat `The Wedding of Satria & Nadia`.
+- Menjalankan `compile_applet` dan `lint_applet` untuk memverifikasi aplikasi berhasil dikompilasi tanpa kesalahan.

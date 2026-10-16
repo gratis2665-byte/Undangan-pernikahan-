@@ -28,16 +28,16 @@ const greatVibes = Great_Vibes({
 });
 
 export const metadata: Metadata = {
-  title: 'The Royal Islamic Wedding of Satria & Nadia',
+  title: 'The Wedding of Satria & Nadia',
   description: 'Undangan Pernikahan Islami Satria Pratama & Nadia Angela. Walimatul Ursy di Masjid Agung.',
   openGraph: {
-    title: 'The Royal Islamic Wedding of Satria & Nadia',
+    title: 'The Wedding of Satria & Nadia',
     description: 'Undangan Pernikahan Islami Satria Pratama & Nadia Angela di Masjid Agung.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'The Royal Islamic Wedding of Satria & Nadia',
+    title: 'The Wedding of Satria & Nadia',
     description: 'Undangan Pernikahan Islami Satria Pratama & Nadia Angela di Masjid Agung.',
   },
 };

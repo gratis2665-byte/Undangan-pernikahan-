@@ -281,6 +281,14 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
     }));
   };
 
+  const getSimpleGuestUrl = (targetGuestName?: string) => {
+    if (typeof window === 'undefined') return '';
+    const guest = (targetGuestName || formData.guestName || 'Bpk. Budi Santoso & Keluarga').trim();
+    const origin = window.location.origin;
+    const path = window.location.pathname;
+    return `${origin}${path}?to=${encodeURIComponent(guest)}`;
+  };
+
   const getFullShareUrl = (targetGuestName?: string) => {
     if (typeof window === 'undefined') return '';
     const guest = (targetGuestName || formData.guestName || 'Bpk. Budi Santoso & Keluarga').trim();
@@ -292,24 +300,19 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
 
   const handleCopyGuestLink = (targetGuestName?: string) => {
     if (typeof window === 'undefined') return;
-    const url = getFullShareUrl(targetGuestName || formData.guestName);
+    const url = getSimpleGuestUrl(targetGuestName || formData.guestName);
     navigator.clipboard.writeText(url);
     setCopiedGuestLink(true);
     setTimeout(() => setCopiedGuestLink(false), 2500);
   };
 
   const handleCopySimpleLink = (targetGuestName?: string) => {
-    if (typeof window === 'undefined') return;
-    const guestQuery = encodeURIComponent((targetGuestName || formData.guestName || 'Bpk. Budi Santoso & Keluarga').trim());
-    const fullUrl = `${window.location.origin}${window.location.pathname}?to=${guestQuery}`;
-    navigator.clipboard.writeText(fullUrl);
-    setCopiedGuestLink(true);
-    setTimeout(() => setCopiedGuestLink(false), 2500);
+    handleCopyGuestLink(targetGuestName);
   };
 
   const handleOpenPreviewInNewTab = (targetGuestName?: string) => {
     if (typeof window === 'undefined') return;
-    const url = getFullShareUrl(targetGuestName || formData.guestName);
+    const url = getSimpleGuestUrl(targetGuestName || formData.guestName);
     window.open(url, '_blank');
   };
 
@@ -324,7 +327,7 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
   const handleShareWhatsApp = (targetGuestName?: string) => {
     if (typeof window === 'undefined') return;
     const guest = (targetGuestName || formData.guestName || 'Bpk. Budi Santoso & Keluarga').trim();
-    const url = getFullShareUrl(targetGuestName);
+    const url = getSimpleGuestUrl(targetGuestName);
     const groomName = (formData.groom.name || formData.groom.fullName.split(' ')[0] || 'Satria').trim();
     const brideName = (formData.bride.name || formData.bride.fullName.split(' ')[0] || 'Nadia').trim();
     const dateStr = formData.akad.date || formData.eventDateDisplay || '24 Oktober 2026';
@@ -996,12 +999,12 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
                     {copiedGuestLink ? (
                       <>
                         <Check className="w-3.5 h-3.5 text-emerald-400" />
-                        <span className="text-emerald-300">Tautan Khusus Tamu Berhasil Disalin!</span>
+                        <span className="text-emerald-300">Tautan Tamu Berhasil Disalin!</span>
                       </>
                     ) : (
                       <>
                         <Copy className="w-3.5 h-3.5" />
-                        <span>Salin Link Undangan Lengkap untuk Tamu Ini</span>
+                        <span>Salin Link Tamu (?to=...)</span>
                       </>
                     )}
                   </button>
@@ -1111,7 +1114,7 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
                       ) : (
                         <>
                           <Copy className="w-3.5 h-3.5" />
-                          <span>Salin Link Tamu Lengkap</span>
+                          <span>Salin Link Tamu (?to=...)</span>
                         </>
                       )}
                     </button>
@@ -2078,15 +2081,15 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
                 </div>
               </div>
 
-              {/* BAGIAN 1: GENERATOR LINK TAMU OTOMATIS (WHATSAPP READY) */}
+              {/* BAGIAN 1: GENERATOR LINK TAMU RINGKAS (BERSIH ?to=...) */}
               <div className="p-4 sm:p-5 rounded-2xl bg-[#170207] border-2 border-[#cda142]/50 space-y-4 shadow-xl">
                 <div className="flex items-center justify-between border-b border-[#cda142]/20 pb-2">
                   <h4 className="font-cinzel text-xs font-bold text-[#fae5aa] uppercase tracking-wider flex items-center gap-2">
                     <Mail className="w-4 h-4 text-[#fae5aa]" />
-                    Generator Link Tamu (Otomatis Lengkap dengan Data Pengantin)
+                    Generator Link Tamu Ringkas (?to=NamaTamu)
                   </h4>
-                  <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800">
-                    Rekomendasi
+                  <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-800">
+                    Bersih &amp; Rapi
                   </span>
                 </div>
 
@@ -2127,11 +2130,11 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
                   </div>
                 </div>
 
-                {/* Pratinjau Tautan */}
+                {/* Pratinjau Tautan Bersih */}
                 <div className="p-3 rounded-xl bg-[#1f030a] border border-[#cda142]/20 text-[11px] space-y-1.5">
-                  <span className="text-stone-400 font-sans block">Pratinjau URL yang Dibuat:</span>
-                  <div className="p-2 rounded-lg bg-[#140207] border border-white/5 font-mono text-[10px] text-stone-300 break-all select-all">
-                    {typeof window !== 'undefined' ? getFullShareUrl(guestForShareTab) : ''}
+                  <span className="text-stone-400 font-sans block">Pratinjau Tautan Bersih yang Disalin:</span>
+                  <div className="p-2.5 rounded-lg bg-[#140207] border border-[#cda142]/30 font-mono text-[11px] text-[#fae5aa] break-all select-all">
+                    {typeof window !== 'undefined' ? getSimpleGuestUrl(guestForShareTab) : ''}
                   </div>
                 </div>
 
@@ -2150,7 +2153,7 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
                     ) : (
                       <>
                         <Copy className="w-4 h-4" />
-                        <span>Salin Link Tamu Lengkap</span>
+                        <span>Salin Link Tamu (?to=...)</span>
                       </>
                     )}
                   </button>
@@ -2171,6 +2174,25 @@ export function AdminModal({ isOpen, onClose, data, onSave, onReset }: AdminModa
                   >
                     <Globe className="w-4 h-4" />
                     <span>Uji di Tab Baru</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleCopyFullShareUrl(guestForShareTab)}
+                    className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 text-[11px] transition cursor-pointer ml-auto border border-white/10"
+                    title="Salin tautan dengan seluruh payload data (?wd=...)"
+                  >
+                    {copiedFullShareUrl ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-300">Link Lengkap Tersalin</span>
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-3.5 h-3.5" />
+                        <span>Opsi: Salin Link dengan Data (?wd=...)</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

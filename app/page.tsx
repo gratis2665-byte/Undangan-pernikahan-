@@ -63,6 +63,16 @@ function WeddingContent() {
   // Dynamic guest name: resolves URL query param (?to=...) or weddingData guestName
   const guestName = (guestParam || weddingData.guestName || 'Bpk. Budi Santoso & Keluarga').trim();
 
+  const groomCall = (weddingData.groom?.name || weddingData.groom?.fullName?.split(' ')[0] || 'Satria').trim();
+  const brideCall = (weddingData.bride?.name || weddingData.bride?.fullName?.split(' ')[0] || 'Nadia').trim();
+
+  // Dynamic browser tab title sync
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.title = `The Wedding of ${groomCall} & ${brideCall}`;
+    }
+  }, [groomCall, brideCall]);
+
   // Lock scroll while on cover screen so the guest stays focused on the royal envelope
   useEffect(() => {
     if (!isOpen) {

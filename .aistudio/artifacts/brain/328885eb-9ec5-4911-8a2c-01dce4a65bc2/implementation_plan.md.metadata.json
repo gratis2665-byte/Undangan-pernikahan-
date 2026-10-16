@@ -1,6 +1,6 @@
 {
-  "summary": "Rencana implementasi solusi lengkap agar perubahan data undangan di Admin (nama mempelai, tanggal countdown, kisah cinta, rekening, dan foto) tersimpan dan langsung tampil di browser atau perangkat lain tanpa database, menggunakan kombinasi Link Berbagi Otomatis terenkripsi dan Ekspor File wedding-data.ts untuk Vercel/GitHub.",
-  "updatedAt": "2026-10-16T12:32:01.224855836Z",
+  "summary": "Rencana perbaikan judul label tab browser agar ringkas dan elegan dengan format 'The Wedding of [Nama Pria] & [Nama Wanita]' pada app/layout.tsx, metadata web, dan sinkronisasi dinamis pada browser.",
+  "updatedAt": "2026-10-16T13:12:58.176095958Z",
   "requestFeedback": true,
   "userFacing": true
 }
